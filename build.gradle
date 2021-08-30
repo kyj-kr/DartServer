@@ -24,7 +24,6 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	runtimeOnly 'mysql:mysql-connector-java'
 }
 

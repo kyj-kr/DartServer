@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class MsgController {
 
-    @PostMapping
+    @PostMapping(value = "/token")
     public void post(@RequestBody Param body) {
         String deviceToken = body.getDeviceToken();
         System.out.println(deviceToken);

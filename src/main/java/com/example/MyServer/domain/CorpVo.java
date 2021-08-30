@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TestVo {
+public class CorpVo {
     private String Name;
 }
