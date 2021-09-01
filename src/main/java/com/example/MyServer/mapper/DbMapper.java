@@ -1,13 +1,13 @@
 package com.example.MyServer.mapper;
 
-import com.example.MyServer.domain.CorpVo;
+import com.example.MyServer.domain.TokenVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @Mapper
 public interface DbMapper {
-    List<CorpVo> selectTest();
+    void insertAlarm(TokenVo tokenVo);
+    void updateAlarm(TokenVo tokenVo);
+    void deleteUser(TokenVo tokenVo);
 }

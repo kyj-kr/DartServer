@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.MyServer.mapper.DbMapper">
-    <select id="selectTest" resultType="CorpVo">
-        SELECT name from userdata;
+    <select id="insertAlarm" parameterType="TokenVo">
+        insert into usertoken(deviceToken, corpNames) values (#{deviceToken}, #{corpNames})
+    </select>
+
+    <select id="updateAlarm" parameterType="TokenVo">
+        update usertoken set corpNames=#{corpNames} where deviceToken=#{deviceToken}
+    </select>
+
+    <select id="deleteUser" parameterType="TokenVo">
+        delete from usertoken where deviceToken=#{deviceToken}
     </select>
 </mapper>

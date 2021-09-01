@@ -5,6 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CorpVo {
-    private String Name;
+public class TokenVo {
+    private String deviceToken;
+    private String corpNames;
 }
