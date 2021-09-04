@@ -14,23 +14,23 @@ public class DbController {
     @Autowired
     DbService dbService;
 
-    @PostMapping(value = "/alarmInsert")
-    public void insertTokenAndCorpNames(@RequestBody TokenVo tokenVo) throws Exception {
-        String deviceToken = tokenVo.getDeviceToken();
-        String corpNames = tokenVo.getCorpNames();
-        System.out.println("deviceToken: " + deviceToken);
-        System.out.println("corpNames: " + corpNames);
-
-        dbService.insertAlarm(tokenVo);
-    }
-
-    @PostMapping(value = "/alarmUpdate")
-    public void updateTokenAndCorpNames(@RequestBody TokenVo tokenVo) throws Exception {
-        dbService.updateAlarm(tokenVo);
-    }
-
-    @PostMapping(value = "/userRemove")
-    public void userRemove(@RequestBody TokenVo tokenVo) throws Exception {
-        dbService.deleteUser(tokenVo);
-    }
+//    @PostMapping(value = "/alarmInsert")
+//    public void insertTokenAndCorpNames(@RequestBody TokenVo tokenVo) throws Exception {
+//        String deviceToken = tokenVo.getDeviceToken();
+//        String corpNames = tokenVo.getCorpNames();
+//        System.out.println("deviceToken: " + deviceToken);
+//        System.out.println("corpNames: " + corpNames);
+//
+//        dbService.insertAlarm(tokenVo);
+//    }
+//
+//    @PostMapping(value = "/alarmUpdate")
+//    public void updateTokenAndCorpNames(@RequestBody TokenVo tokenVo) throws Exception {
+//        dbService.updateAlarm(tokenVo);
+//    }
+//
+//    @PostMapping(value = "/userRemove")
+//    public void userRemove(@RequestBody TokenVo tokenVo) throws Exception {
+//        dbService.deleteUser(tokenVo);
+//    }
 }
