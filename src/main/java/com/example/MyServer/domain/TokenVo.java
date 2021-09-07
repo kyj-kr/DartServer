@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TokenVo {
+    private String androidId;
     private String deviceToken;
     private String corpNames;
 }

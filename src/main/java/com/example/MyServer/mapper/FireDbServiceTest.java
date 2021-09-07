@@ -13,18 +13,20 @@ import org.springframework.stereotype.Service;
 public class FireDbServiceTest {
 
     private final String URL = "https://dart-1f534-default-rtdb.firebaseio.com/users";
-    public static final String COL_NAME = "users";
 
     public String createUserDetail(TokenVo tokenVo) throws Exception {
+        String androidId = tokenVo.getAndroidId();
+        String deviceToken = tokenVo.getDeviceToken();
+        String corpNames = tokenVo.getCorpNames();
         String message = "{\n" +
-                "    \"deviceToken\": \"1231\",\n" +
-                "    \"corpNames\": \"3S\"\n" +
+                "    \"deviceToken\": \"" + deviceToken + "\",\n" +
+                "    \"corpNames\": \"" + corpNames + "\"\n" +
                 "}";
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
-                .url(URL + ".json")
-                .post(requestBody)
+                .url(URL + "/" + androidId + ".json")
+                .put(requestBody)
                 .build();
 
         Response response = client.newCall(request).execute();
@@ -38,21 +40,23 @@ public class FireDbServiceTest {
     }
 
     public String updateUserDetail(TokenVo tokenVo) throws Exception {
+        String androidId = tokenVo.getAndroidId();
+        String deviceToken = tokenVo.getDeviceToken();
+        String corpNames = tokenVo.getCorpNames();
         String message = "{\n" +
-                "    \"deviceToken\": \"1231\",\n" +
-                "    \"corpNames\": \"3S\"\n" +
+                "    \"deviceToken\": \"" + deviceToken + "\",\n" +
+                "    \"corpNames\": \"" + corpNames + "\"\n" +
                 "}";
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
-                .url(URL + ".json")
-                .post(requestBody)
+                .url(URL + "/" + androidId + ".json")
+                .put(requestBody)
                 .build();
 
         Response response = client.newCall(request).execute();
 
         String responseBodyString = response.body().string();
-        System.out.println("responseBodyString: " + responseBodyString);
         return responseBodyString;
     }
 

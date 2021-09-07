@@ -31,18 +31,18 @@ public class FireDbController {
 //        return fireDbService.deleteUserDetail(tokenVo.getDeviceToken());
 //    }
 
-    @PostMapping(value = "/alarmInsert")
-    public String createUser(@RequestBody TokenVo tokenVo) throws Exception {
-        return fireDbServiceTest.createUserDetail(tokenVo);
-    }
-
-    @PostMapping(value = "/alarmUpdate")
-    public String updateUser(@RequestBody TokenVo tokenVo) throws Exception {
-        return fireDbServiceTest.updateUserDetail(tokenVo);
-    }
-
-    @PostMapping(value = "/userRemove")
-    public String deleteUser(@RequestBody TokenVo tokenVo) throws Exception {
-        return fireDbServiceTest.deleteUserDetail(tokenVo.getDeviceToken());
-    }
+//    @PostMapping(value = "/alarmInsert")
+//    public String createUser(@RequestBody TokenVo tokenVo) throws Exception {
+//        return fireDbServiceTest.createUserDetail(tokenVo);
+//    }
+//
+//    @PostMapping(value = "/alarmUpdate")
+//    public String updateUser(@RequestBody TokenVo tokenVo) throws Exception {
+//        return fireDbServiceTest.updateUserDetail(tokenVo);
+//    }
+//
+//    @PostMapping(value = "/userRemove")
+//    public String deleteUser(@RequestBody TokenVo tokenVo) throws Exception {
+//        return fireDbServiceTest.deleteUserDetail(tokenVo.getDeviceToken());
+//    }
 }
