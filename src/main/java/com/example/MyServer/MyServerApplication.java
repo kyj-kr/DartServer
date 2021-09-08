@@ -1,9 +1,14 @@
 package com.example.MyServer;
 
+import com.example.MyServer.domain.RecentCorpVo;
 import com.example.MyServer.domain.TokenVo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,26 +29,50 @@ public class MyServerApplication {
 //	private static final String USER = "root";
 //	private static final String PASSWORD = "1234";
 
+	private static OkHttpClient client = new OkHttpClient();
 	private static final String FIREBASE_DB_URL = "https://dart-1f534-default-rtdb.firebaseio.com/users";
+	private static ArrayList<TokenVo> userDatas = null;
+	private static ArrayList<RecentCorpVo> recentCorps = null;
 
 	public static void main(String[] args) {
 		SpringApplication.run(MyServerApplication.class, args);
 
-		// DB에서 유저들 정보 싹 긁어오기
-		ArrayList<TokenVo> userDatas = getUserDatas();
+		while(true) {
+			// DB에서 유저들 정보 싹 긁어오기
+			userDatas = getUserDatas();
+
+			// 최근 공시 회사 홈페이지에서 긁어오기
+			recentCorps = getRecentCorps();
+
+			// 최근 공시 올라온 회사랑 유저들 corpnames contains 여부 확인하고 존재하면 cloudmessage 보내기
+			for (TokenVo tokenVo : userDatas) {
+				for (RecentCorpVo recentCorpVo : recentCorps) {
+					if (tokenVo.getCorpNames().contains(recentCorpVo.getCorpName())) {
+						try {
+							new FirebaseCloudMessageService().sendMessageTo(tokenVo.getDeviceToken(), "공시 알림", "알림 설정된 공시가 올라왔어요 !");
+						} catch (Exception e) {
+							System.out.println(e);
+						}
+						break;
+					}
+				}
+			}
+			System.out.println("End");
+		}
+
+
 	}
 
 	private static ArrayList<TokenVo> getUserDatas() {
 		try {
-			OkHttpClient client = new OkHttpClient();
-
 			Request request = new Request.Builder()
 					.url(FIREBASE_DB_URL + ".json")
 					.build();
 
 			Response response = client.newCall(request).execute();
 
-			return parseRawData(response.body().string());
+			String responseString = response.body().string();
+			return parseUserData(responseString);
 
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -51,7 +80,7 @@ public class MyServerApplication {
 		return null;
 	}
 
-	private static ArrayList<TokenVo> parseRawData(String rawData) {
+	private static ArrayList<TokenVo> parseUserData(String rawData) {
 		ArrayList<TokenVo> userDatas = new ArrayList<>();
 		TokenVo userData = null;
 
@@ -64,7 +93,7 @@ public class MyServerApplication {
 			ch = rawData.charAt(i);
 			if(ch == '"') {
 				isOpenQuote = !isOpenQuote;
-				if(!isOpenQuote) {
+				if(!isOpenQuote) { // 하나의 word를 모았을때
 					switch(j % 5) {
 						case 0: // androidId
 							userData = new TokenVo();
@@ -81,15 +110,88 @@ public class MyServerApplication {
 							break;
 
 						default:
-							System.out.println("MyServerApplication Divide Error!");
+
 					}
 					word = "";
 					j++;
-					continue;
 				}
+				continue;
 			}
-			word = word + ch;
+			if(isOpenQuote) { // quote 안의 인덱스일 경우
+				word = word + ch;
+			}
 		}
 		return userDatas;
+	}
+
+	private static ArrayList<RecentCorpVo> getRecentCorps() {
+		try {
+			// 전체
+			Request request = new Request.Builder()
+					.url("http://dart.fss.or.kr/dsac001/mainAll.do")
+					.build();
+
+			Response response = client.newCall(request).execute();
+			String responseString = response.body().string();
+			ArrayList<RecentCorpVo> resultList = parseRecentCorp(responseString);
+
+			// 5퍼 임원
+			request = new Request.Builder()
+					.url("http://dart.fss.or.kr/dsac001/mainO.do")
+					.build();
+
+			response = client.newCall(request).execute();
+			responseString = response.body().string();
+			resultList.addAll(parseRecentCorp(responseString));
+
+			// 펀드
+			request = new Request.Builder()
+					.url("http://dart.fss.or.kr/dsac001/mainF.do")
+					.build();
+
+			response = client.newCall(request).execute();
+			responseString = response.body().string();
+			resultList.addAll(parseRecentCorp(responseString));
+
+			return resultList;
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static ArrayList<RecentCorpVo> parseRecentCorp(String html) {
+		ArrayList<RecentCorpVo> recentCorps = new ArrayList<>();
+		RecentCorpVo recentCorpVo = null;
+		String corpName = null;
+		String receptNum = null;
+
+		Document document = Jsoup.parse(html);
+		Elements elements = document.select("div[id=listContents] tbody tr td[class=tL]");
+
+
+		int i = 0;
+		for(Element element : elements) {
+			switch(i % 2) {
+				case 0:
+					recentCorpVo = new RecentCorpVo();
+					corpName = element.select("a").text();
+					recentCorpVo.setCorpName(corpName);
+					break;
+
+				case 1:
+					receptNum = element.select("a").attr("id").split("_")[1];
+					recentCorpVo.setReceptNum(receptNum);
+					recentCorps.add(recentCorpVo);
+					break;
+
+				default:
+					System.out.println("MyServerApplication Switch Error");
+			}
+			i++;
+		}
+
+		return recentCorps;
 	}
 }
