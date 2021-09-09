@@ -1,11 +1,6 @@
 package com.example.MyServer.mapper;
 
-import com.example.MyServer.domain.TokenVo;
-import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
-import com.google.firebase.cloud.FirestoreClient;
+import com.example.MyServer.domain.UserVo;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +9,10 @@ public class FireDbServiceTest {
 
     private final String URL = "https://dart-1f534-default-rtdb.firebaseio.com/users";
 
-    public String createUserDetail(TokenVo tokenVo) throws Exception {
-        String androidId = tokenVo.getAndroidId();
-        String deviceToken = tokenVo.getDeviceToken();
-        String corpNames = tokenVo.getCorpNames();
+    public String createUserDetail(UserVo userVo) throws Exception {
+        String androidId = userVo.getAndroidId();
+        String deviceToken = userVo.getDeviceToken();
+        String corpNames = userVo.getCorpNames();
         String message = "{\n" +
                 "    \"deviceToken\": \"" + deviceToken + "\",\n" +
                 "    \"corpNames\": \"" + corpNames + "\"\n" +
@@ -35,14 +30,14 @@ public class FireDbServiceTest {
         return responseBodyString;
     }
 
-    public TokenVo getUserDetail(String deviceToken) throws Exception {
+    public UserVo getUserDetail(String deviceToken) throws Exception {
         return null;
     }
 
-    public String updateUserDetail(TokenVo tokenVo) throws Exception {
-        String androidId = tokenVo.getAndroidId();
-        String deviceToken = tokenVo.getDeviceToken();
-        String corpNames = tokenVo.getCorpNames();
+    public String updateUserDetail(UserVo userVo) throws Exception {
+        String androidId = userVo.getAndroidId();
+        String deviceToken = userVo.getDeviceToken();
+        String corpNames = userVo.getCorpNames();
         String message = "{\n" +
                 "    \"deviceToken\": \"" + deviceToken + "\",\n" +
                 "    \"corpNames\": \"" + corpNames + "\"\n" +

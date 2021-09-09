@@ -1,7 +1,8 @@
 package com.example.MyServer;
 
+import com.example.MyServer.domain.NotiVo;
 import com.example.MyServer.domain.RecentCorpVo;
-import com.example.MyServer.domain.TokenVo;
+import com.example.MyServer.domain.UserVo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,14 +12,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.tags.Param;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 
 @SpringBootApplication
@@ -31,39 +25,46 @@ public class MyServerApplication {
 
 	private static OkHttpClient client = new OkHttpClient();
 	private static final String FIREBASE_DB_URL = "https://dart-1f534-default-rtdb.firebaseio.com/users";
-	private static ArrayList<TokenVo> userDatas = null;
-	private static ArrayList<RecentCorpVo> recentCorps = null;
+	private static ArrayList<UserVo> userDatas = new ArrayList<>();
+	private static ArrayList<RecentCorpVo> recentCorps = new ArrayList<>();
 
 	public static void main(String[] args) {
 		SpringApplication.run(MyServerApplication.class, args);
 
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
-			userDatas = getUserDatas();
+			getUserDatas();
 
 			// 최근 공시 회사 홈페이지에서 긁어오기
-			recentCorps = getRecentCorps();
+			getRecentCorps();
 
 			// 최근 공시 올라온 회사랑 유저들 corpnames contains 여부 확인하고 존재하면 cloudmessage 보내기
-			for (TokenVo tokenVo : userDatas) {
+			for (UserVo userVo : userDatas) {
 				for (RecentCorpVo recentCorpVo : recentCorps) {
-					if (tokenVo.getCorpNames().contains(recentCorpVo.getCorpName())) {
+					if (userVo.getCorpNames().contains(recentCorpVo.getCorpName()) && !userVo.isContains(recentCorpVo.getReceptNum())) {
+						userVo.getNotiVos().add(new NotiVo(recentCorpVo.getReceptNum(), false));
+					}
+				}
+
+				for(NotiVo notiVo : userVo.getNotiVos()) {
+					if(!notiVo.isMessaged()) {
 						try {
-							new FirebaseCloudMessageService().sendMessageTo(tokenVo.getDeviceToken(), "공시 알림", "알림 설정된 공시가 올라왔어요 !");
+							notiVo.setMessaged(true);
+							new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), "공시 알림", "알림 설정된 공시가 올라왔어요!");
 						} catch (Exception e) {
 							System.out.println(e);
 						}
-						break;
 					}
 				}
 			}
+
 			System.out.println("End");
 		}
 
 
 	}
 
-	private static ArrayList<TokenVo> getUserDatas() {
+	private static void getUserDatas() {
 		try {
 			Request request = new Request.Builder()
 					.url(FIREBASE_DB_URL + ".json")
@@ -72,22 +73,21 @@ public class MyServerApplication {
 			Response response = client.newCall(request).execute();
 
 			String responseString = response.body().string();
-			return parseUserData(responseString);
+			parseUserData(responseString);
 
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 
-	private static ArrayList<TokenVo> parseUserData(String rawData) {
-		ArrayList<TokenVo> userDatas = new ArrayList<>();
-		TokenVo userData = null;
+	private static void parseUserData(String rawData) {
+		UserVo userData = null;
 
 		int strSize = rawData.length();
 		char ch;
 		String word = "";
 		boolean isOpenQuote = false;
+		boolean isPass = false;
 		int j = 0;
 		for(int i = 0; i < strSize; i++) {
 			ch = rawData.charAt(i);
@@ -96,15 +96,25 @@ public class MyServerApplication {
 				if(!isOpenQuote) { // 하나의 word를 모았을때
 					switch(j % 5) {
 						case 0: // androidId
-							userData = new TokenVo();
+							isPass = false;
+							for(UserVo userVo : userDatas) {
+								if(userVo.getAndroidId().equals(word)) { // 똑같은 androidId 있으면 패스
+									isPass = true;
+									break;
+								}
+							}
+							if(isPass) break;
+							userData = new UserVo();
 							userData.setAndroidId(word);
 							break;
 
 						case 2: // corpNames
+							if(isPass) break;
 							userData.setCorpNames(word);
 							break;
 
 						case 4: // deviceToken
+							if(isPass) break;
 							userData.setDeviceToken(word);
 							userDatas.add(userData);
 							break;
@@ -121,10 +131,9 @@ public class MyServerApplication {
 				word = word + ch;
 			}
 		}
-		return userDatas;
 	}
 
-	private static ArrayList<RecentCorpVo> getRecentCorps() {
+	private static void getRecentCorps() {
 		try {
 			// 전체
 			Request request = new Request.Builder()
@@ -133,7 +142,7 @@ public class MyServerApplication {
 
 			Response response = client.newCall(request).execute();
 			String responseString = response.body().string();
-			ArrayList<RecentCorpVo> resultList = parseRecentCorp(responseString);
+			parseRecentCorp(responseString);
 
 			// 5퍼 임원
 			request = new Request.Builder()

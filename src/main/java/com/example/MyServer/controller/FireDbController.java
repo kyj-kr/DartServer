@@ -1,11 +1,7 @@
 package com.example.MyServer.controller;
 
-import com.example.MyServer.FireDbService;
-import com.example.MyServer.domain.TokenVo;
 import com.example.MyServer.mapper.FireDbServiceTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
