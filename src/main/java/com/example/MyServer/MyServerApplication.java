@@ -205,6 +205,7 @@ public class MyServerApplication {
 					recentCorpVo = new RecentCorpVo();
 					time = element.text();
 					recentCorpVo.setTime(time);
+					break;
 
 				case 1:
 					corpName = element.select("a").first().text();
