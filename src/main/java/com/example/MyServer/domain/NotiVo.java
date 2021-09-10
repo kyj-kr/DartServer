@@ -11,6 +11,8 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class NotiVo {
 
+    private String corpName;
+    private String time;
     private String notifedReceptNum;
     private boolean isMessaged;
 

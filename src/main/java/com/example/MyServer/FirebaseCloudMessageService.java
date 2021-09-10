@@ -35,7 +35,7 @@ public class FirebaseCloudMessageService {
 
     private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
         FcmMessage fcmMessage =
-                 FcmMessage.builder()
+                FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
                         .token(targetToken)
                         .notification(FcmMessage.Notification.builder()

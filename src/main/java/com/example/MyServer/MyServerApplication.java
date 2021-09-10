@@ -36,24 +36,39 @@ public class MyServerApplication {
 			getUserDatas();
 
 			// 최근 공시 회사 홈페이지에서 긁어오기
-			getRecentCorps();
+			recentCorps = getRecentCorps();
 
 			// 최근 공시 올라온 회사랑 유저들 corpnames contains 여부 확인하고 존재하면 cloudmessage 보내기
+			// notiVos에 notiVo를 넣을건데, 이는 알림 중복을 방지하기 위함
+			// 자세히 말하자면, notiVo에 회사명이랑 보고서 제출번호가 필수적으로 들어가서 서버가 돌아가는 동안 계속 저장되어 있어서 똑같은 보고서에 절대 중복하여 알림을 보내지 않음
+			// 그래서 notiVos에서 특정 notiVo를 remove 하는 코드는 추가하지 않음
 			for (UserVo userVo : userDatas) {
 				for (RecentCorpVo recentCorpVo : recentCorps) {
 					if (userVo.getCorpNames().contains(recentCorpVo.getCorpName()) && !userVo.isContains(recentCorpVo.getReceptNum())) {
-						userVo.getNotiVos().add(new NotiVo(recentCorpVo.getReceptNum(), false));
+						userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), false));
 					}
 				}
 
+				String corpMsg = "";
 				for(NotiVo notiVo : userVo.getNotiVos()) {
 					if(!notiVo.isMessaged()) {
-						try {
-							notiVo.setMessaged(true);
-							new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), "공시 알림", "알림 설정된 공시가 올라왔어요!");
-						} catch (Exception e) {
-							System.out.println(e);
+						notiVo.setMessaged(true);
+						if(!corpMsg.contains(notiVo.getCorpName())) {
+							if(corpMsg.equals("")) {
+								corpMsg = notiVo.getCorpName();
+							}
+							else {
+								corpMsg = corpMsg + ", " + notiVo.getCorpName();
+							}
 						}
+					}
+				}
+
+				if(!corpMsg.equals("")) {
+					try {
+						new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), "공시 알림", corpMsg + "에서 공시가 올라왔어요!");
+					} catch (Exception e) {
+						System.out.println(e);
 					}
 				}
 			}
@@ -80,7 +95,7 @@ public class MyServerApplication {
 		}
 	}
 
-	private static void parseUserData(String rawData) {
+	private static ArrayList<UserVo> parseUserData(String rawData) {
 		UserVo userData = null;
 
 		int strSize = rawData.length();
@@ -100,23 +115,25 @@ public class MyServerApplication {
 							for(UserVo userVo : userDatas) {
 								if(userVo.getAndroidId().equals(word)) { // 똑같은 androidId 있으면 패스
 									isPass = true;
+									userData = userVo;
 									break;
 								}
 							}
-							if(isPass) break;
-							userData = new UserVo();
-							userData.setAndroidId(word);
+							if(!isPass) {
+								userData = new UserVo();
+								userData.setAndroidId(word);
+							}
 							break;
 
 						case 2: // corpNames
-							if(isPass) break;
 							userData.setCorpNames(word);
 							break;
 
 						case 4: // deviceToken
-							if(isPass) break;
 							userData.setDeviceToken(word);
-							userDatas.add(userData);
+							if(!isPass) {
+								userDatas.add(userData);
+							}
 							break;
 
 						default:
@@ -131,18 +148,19 @@ public class MyServerApplication {
 				word = word + ch;
 			}
 		}
+		return userDatas;
 	}
 
-	private static void getRecentCorps() {
+	private static ArrayList<RecentCorpVo> getRecentCorps() {
 		try {
 			// 전체
 			Request request = new Request.Builder()
-					.url("http://dart.fss.or.kr/dsac001/mainAll.do")
+					.url("http://dart.fss.or.kr/dsac001/mainAll.do?selectDate")
 					.build();
 
 			Response response = client.newCall(request).execute();
 			String responseString = response.body().string();
-			parseRecentCorp(responseString);
+			ArrayList<RecentCorpVo> resultList = parseRecentCorp(responseString);
 
 			// 5퍼 임원
 			request = new Request.Builder()
@@ -173,30 +191,33 @@ public class MyServerApplication {
 	private static ArrayList<RecentCorpVo> parseRecentCorp(String html) {
 		ArrayList<RecentCorpVo> recentCorps = new ArrayList<>();
 		RecentCorpVo recentCorpVo = null;
+		String time = null;
 		String corpName = null;
 		String receptNum = null;
 
 		Document document = Jsoup.parse(html);
-		Elements elements = document.select("div[id=listContents] tbody tr td[class=tL]");
-
+		Elements elements = document.select("div[id=listContents] tbody tr td");
 
 		int i = 0;
 		for(Element element : elements) {
-			switch(i % 2) {
+			switch(i % 6) {
 				case 0:
 					recentCorpVo = new RecentCorpVo();
+					time = element.text();
+					recentCorpVo.setTime(time);
+
+				case 1:
 					corpName = element.select("a").text();
 					recentCorpVo.setCorpName(corpName);
 					break;
 
-				case 1:
+				case 2:
 					receptNum = element.select("a").attr("id").split("_")[1];
 					recentCorpVo.setReceptNum(receptNum);
 					recentCorps.add(recentCorpVo);
 					break;
 
 				default:
-					System.out.println("MyServerApplication Switch Error");
 			}
 			i++;
 		}
