@@ -1,0 +1,33 @@
+[debug] [2021-09-11T03:58:16.734Z] ----------------------------------------------------------------------
+[debug] [2021-09-11T03:58:16.736Z] Command:       D:\Downloads\nodejs\node.exe C:\Users\yongj\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve --only hosting
+[debug] [2021-09-11T03:58:16.737Z] CLI Version:   9.18.0
+[debug] [2021-09-11T03:58:16.737Z] Platform:      win32
+[debug] [2021-09-11T03:58:16.737Z] Node Version:  v14.17.6
+[debug] [2021-09-11T03:58:16.739Z] Time:          Sat Sep 11 2021 12:58:16 GMT+0900 (대한민국 표준시)
+[debug] [2021-09-11T03:58:16.739Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-09-11T03:58:16.800Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-09-11T03:58:16.800Z] > authorizing via signed-in user (yongjin12348@gmail.com)
+[debug] [2021-09-11T03:58:16.800Z] [iam] checking project dart-1f534 for permissions ["firebase.projects.get"]
+[debug] [2021-09-11T03:58:16.803Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2021-09-11T03:58:16.803Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2021-09-11T03:58:17.152Z] <<< HTTP RESPONSE 200 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","pragma":"no-cache","date":"Sat, 11 Sep 2021 03:58:15 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-09-11T03:58:17.196Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/dart-1f534:testIamPermissions  
+ {"permissions":["firebase.projects.get"]}
+[debug] [2021-09-11T03:58:18.592Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Sat, 11 Sep 2021 03:58:17 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=831","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-09-11T03:58:18.595Z] > refreshing access token with scopes: []
+[debug] [2021-09-11T03:58:18.596Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2021-09-11T03:58:18.875Z] <<< HTTP RESPONSE 200 {"date":"Sat, 11 Sep 2021 03:58:17 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","expires":"Mon, 01 Jan 1990 00:00:00 GMT","pragma":"no-cache","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-09-11T03:58:18.924Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/dart-1f534 [none]
+[debug] [2021-09-11T03:58:19.532Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/dart-1f534 200
+[debug] [2021-09-11T03:58:19.533Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/dart-1f534 {"projectId":"dart-1f534","projectNumber":"845580756459","displayName":"Dart","name":"projects/dart-1f534","resources":{"hostingSite":"dart-1f534","realtimeDatabaseInstance":"dart-1f534-default-rtdb","storageBucket":"dart-1f534.appspot.com","locationId":"us-central"},"state":"ACTIVE"}
+[debug] [2021-09-11T03:58:19.536Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/dart-1f534/sites 
+[debug] [2021-09-11T03:58:20.989Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/dart-1f534/sites 200
+[debug] [2021-09-11T03:58:20.990Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/dart-1f534/sites {"sites":[{"name":"projects/845580756459/sites/dart-1f534","defaultUrl":"https://dart-1f534.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2021-09-11T03:58:20.990Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/dart-1f534/webApps/-/config [none]
+[debug] [2021-09-11T03:58:22.204Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/dart-1f534/webApps/-/config 200
+[debug] [2021-09-11T03:58:22.204Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/dart-1f534/webApps/-/config {"projectId":"dart-1f534","databaseURL":"https://dart-1f534-default-rtdb.firebaseio.com","storageBucket":"dart-1f534.appspot.com","locationId":"us-central","apiKey":"AIzaSyChfgtU9qNHCSFB5tAzSxhda-EmuEz5Alw","authDomain":"dart-1f534.firebaseapp.com","messagingSenderId":"845580756459"}
+[info] i  hosting: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
+[info] +  hosting: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}

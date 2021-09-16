@@ -36,7 +36,7 @@ public class MyServerApplication {
 			getUserDatas();
 
 			// 최근 공시 회사 홈페이지에서 긁어오기
-			recentCorps = getRecentCorps();
+			getRecentCorps();
 
 			// 최근 공시 올라온 회사랑 유저들 corpnames contains 여부 확인하고 존재하면 cloudmessage 보내기
 			// notiVos에 notiVo를 넣을건데, 이는 알림 중복을 방지하기 위함
@@ -73,7 +73,7 @@ public class MyServerApplication {
 				}
 			}
 
-			System.out.println("End");
+			System.out.println("loop");
 		}
 
 
@@ -95,7 +95,7 @@ public class MyServerApplication {
 		}
 	}
 
-	private static ArrayList<UserVo> parseUserData(String rawData) {
+	private static void parseUserData(String rawData) {
 		UserVo userData = null;
 
 		int strSize = rawData.length();
@@ -148,19 +148,20 @@ public class MyServerApplication {
 				word = word + ch;
 			}
 		}
-		return userDatas;
 	}
 
-	private static ArrayList<RecentCorpVo> getRecentCorps() {
+	private static void getRecentCorps() {
 		try {
+			// recentCorps 초기화
+			recentCorps.clear();
 			// 전체
 			Request request = new Request.Builder()
-					.url("http://dart.fss.or.kr/dsac001/mainAll.do?selectDate")
+					.url("http://dart.fss.or.kr/dsac001/mainAll.do")
 					.build();
 
 			Response response = client.newCall(request).execute();
 			String responseString = response.body().string();
-			ArrayList<RecentCorpVo> resultList = parseRecentCorp(responseString);
+			parseRecentCorp(responseString);
 
 			// 5퍼 임원
 			request = new Request.Builder()
@@ -169,7 +170,7 @@ public class MyServerApplication {
 
 			response = client.newCall(request).execute();
 			responseString = response.body().string();
-			resultList.addAll(parseRecentCorp(responseString));
+			parseRecentCorp(responseString);
 
 			// 펀드
 			request = new Request.Builder()
@@ -178,18 +179,14 @@ public class MyServerApplication {
 
 			response = client.newCall(request).execute();
 			responseString = response.body().string();
-			resultList.addAll(parseRecentCorp(responseString));
-
-			return resultList;
+			parseRecentCorp(responseString);
 
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 
-	private static ArrayList<RecentCorpVo> parseRecentCorp(String html) {
-		ArrayList<RecentCorpVo> recentCorps = new ArrayList<>();
+	private static void parseRecentCorp(String html) {
 		RecentCorpVo recentCorpVo = null;
 		String time = null;
 		String corpName = null;
@@ -223,6 +220,5 @@ public class MyServerApplication {
 			i++;
 		}
 
-		return recentCorps;
 	}
 }
