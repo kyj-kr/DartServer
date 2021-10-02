@@ -13,6 +13,8 @@ import org.jsoup.select.Elements;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @SpringBootApplication
@@ -27,9 +29,14 @@ public class MyServerApplication {
 	private static final String FIREBASE_DB_URL = "https://dart-1f534-default-rtdb.firebaseio.com/users";
 	private static ArrayList<UserVo> userDatas = new ArrayList<>();
 	private static ArrayList<RecentCorpVo> recentCorps = new ArrayList<>();
+	private static String startTime = "";
 
 	public static void main(String[] args) {
 		SpringApplication.run(MyServerApplication.class, args);
+
+		LocalTime localTime = LocalTime.now();
+		localTime = localTime.minusMinutes(2);
+		startTime = localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
@@ -199,9 +206,11 @@ public class MyServerApplication {
 		for(Element element : elements) {
 			switch(i % 6) {
 				case 0:
-					recentCorpVo = new RecentCorpVo();
 					time = element.text();
-					recentCorpVo.setTime(time);
+					if(compareString(time, startTime) == 1) {
+						recentCorpVo = new RecentCorpVo();
+						recentCorpVo.setTime(time);
+					}
 					break;
 
 				case 1:
@@ -220,5 +229,23 @@ public class MyServerApplication {
 			i++;
 		}
 
+	}
+
+	/*
+	* str1, str2를 비교
+	 */
+	public static int compareString(String str1, String str2) {
+		for(int i = 0; i < str1.length(); i++) {
+			char c1 = str1.charAt(i);
+			char c2 = str1.charAt(i);
+
+			if(c1 < c2) {
+				return -1;
+			}
+			else if(c1 > c2) {
+				return 1;
+			}
+		}
+		return 0; // str1 == str2
 	}
 }
