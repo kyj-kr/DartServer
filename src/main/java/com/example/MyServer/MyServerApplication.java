@@ -203,6 +203,7 @@ public class MyServerApplication {
 		Elements elements = document.select("div[id=listContents] tbody tr td");
 
 		int i = 0;
+		boolean isNeed = false;
 		for(Element element : elements) {
 			switch(i % 6) {
 				case 0:
@@ -210,18 +211,24 @@ public class MyServerApplication {
 					if(compareString(time, startTime) == 1) {
 						recentCorpVo = new RecentCorpVo();
 						recentCorpVo.setTime(time);
+						isNeed = true;
 					}
 					break;
 
 				case 1:
-					corpName = element.select("a").first().text();
-					recentCorpVo.setCorpName(corpName);
+					if(isNeed) {
+						corpName = element.select("a").first().text();
+						recentCorpVo.setCorpName(corpName);
+					}
 					break;
 
 				case 2:
-					receptNum = element.select("a").attr("id").split("_")[1];
-					recentCorpVo.setReceptNum(receptNum);
-					recentCorps.add(recentCorpVo);
+					if(isNeed) {
+						receptNum = element.select("a").attr("id").split("_")[1];
+						recentCorpVo.setReceptNum(receptNum);
+						recentCorps.add(recentCorpVo);
+					}
+					isNeed = false;
 					break;
 
 				default:
@@ -237,7 +244,7 @@ public class MyServerApplication {
 	public static int compareString(String str1, String str2) {
 		for(int i = 0; i < str1.length(); i++) {
 			char c1 = str1.charAt(i);
-			char c2 = str1.charAt(i);
+			char c2 = str2.charAt(i);
 
 			if(c1 < c2) {
 				return -1;
