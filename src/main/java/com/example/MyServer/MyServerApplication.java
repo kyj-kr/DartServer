@@ -13,6 +13,7 @@ import org.jsoup.select.Elements;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,9 +35,11 @@ public class MyServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MyServerApplication.class, args);
 
+
+		LocalDate localDate = LocalDate.now();
 		LocalTime localTime = LocalTime.now();
 		localTime = localTime.minusMinutes(2);
-		startTime = localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
@@ -198,38 +201,44 @@ public class MyServerApplication {
 		String time = null;
 		String corpName = null;
 		String receptNum = null;
+		String dateAndTime = null;
 
 		Document document = Jsoup.parse(html);
 		Elements elements = document.select("div[id=listContents] tbody tr td");
 
 		int i = 0;
-		boolean isNeed = false;
+		boolean needAlloc = true;
 		for(Element element : elements) {
 			switch(i % 6) {
 				case 0:
 					time = element.text();
-					if(compareString(time, startTime) == 1) {
+					if(needAlloc) {
 						recentCorpVo = new RecentCorpVo();
-						recentCorpVo.setTime(time);
-						isNeed = true;
 					}
+					recentCorpVo.setTime(time);
 					break;
 
 				case 1:
-					if(isNeed) {
-						corpName = element.select("a").first().text();
-						recentCorpVo.setCorpName(corpName);
-					}
+					corpName = element.select("a").first().text();
+					recentCorpVo.setCorpName(corpName);
 					break;
 
 				case 2:
-					if(isNeed) {
-						receptNum = element.select("a").attr("id").split("_")[1];
-						recentCorpVo.setReceptNum(receptNum);
-						recentCorps.add(recentCorpVo);
-					}
-					isNeed = false;
+					receptNum = element.select("a").attr("id").split("_")[1];
+					recentCorpVo.setReceptNum(receptNum);
 					break;
+
+				case 4:
+					dateAndTime = element.text() + "." + time;
+					if(compareString(dateAndTime, startTime) > 0) {
+						recentCorps.add(recentCorpVo);
+						needAlloc = true;
+					}
+					else {
+						needAlloc = false;
+					}
+					break;
+
 
 				default:
 			}
@@ -239,7 +248,7 @@ public class MyServerApplication {
 	}
 
 	/*
-	* str1, str2를 비교
+	 * str1, str2를 비교
 	 */
 	public static int compareString(String str1, String str2) {
 		for(int i = 0; i < str1.length(); i++) {
