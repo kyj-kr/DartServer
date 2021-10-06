@@ -41,6 +41,12 @@ public class MyServerApplication {
 		localTime = localTime.minusMinutes(2);
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 
+		try {
+			new FirebaseCloudMessageService().sendMessageTo("fB9Ew4V_Q12xlHZSWA9h2n:APA91bHwMZnvHO3vJWoy7aV_xrVG3FXliHTWToyUTv6c-rjQl0xeNLVLFU4CrmuzE9tj0tntXrsljHsfoVAp75WEZ1a4FAvUa4GPEFC0-Ne45Qdh2DiF_8SxV7tzGH3VoxZtj0Hoov1R", "공시 알림", "Test");
+		} catch(Exception e) {
+
+		}
+
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
 			getUserDatas();
