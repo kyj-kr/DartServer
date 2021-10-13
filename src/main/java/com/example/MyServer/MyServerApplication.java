@@ -40,12 +40,13 @@ public class MyServerApplication {
 		LocalTime localTime = LocalTime.now();
 		localTime = localTime.minusMinutes(2);
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+		System.out.println("startTime: " + startTime);
 
-		try {
-			new FirebaseCloudMessageService().sendMessageTo("fB9Ew4V_Q12xlHZSWA9h2n:APA91bHwMZnvHO3vJWoy7aV_xrVG3FXliHTWToyUTv6c-rjQl0xeNLVLFU4CrmuzE9tj0tntXrsljHsfoVAp75WEZ1a4FAvUa4GPEFC0-Ne45Qdh2DiF_8SxV7tzGH3VoxZtj0Hoov1R", "Server", "관리자야 서버 다시 시작했다");
-		} catch(Exception e) {
-
-		}
+//		try {
+//			new FirebaseCloudMessageService().sendMessageTo("dSBc1qvZSeqYVi3FNq2YPT:APA91bGzbJjFdML3BDI8GZ5pJO9Mo0eEARdwtFt62LgSFv3Bgb_HJdbexkzVbcDKVcXLLqBnygmvHnBJcyuxvYMxLPnW17hcpJpWqAtyi6N3Oi1RNMqZNdYO_sQOR1lpQ-XDzaQ4QW2p", "Server", "관리자야 서버 다시 시작했다");
+//		} catch(Exception e) {
+//
+//		}
 
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
