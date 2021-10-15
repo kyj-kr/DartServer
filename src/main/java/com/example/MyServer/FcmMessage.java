@@ -25,6 +25,6 @@ public class FcmMessage {
     public static class Data {
         private String title;
         private String body;
-        private String image;
+        private String date;
     }
 }

@@ -15,8 +15,8 @@ public class FirebaseCloudMessageService {
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/dart-1f534/messages:send";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void sendMessageTo(String targetToken, String title, String body) throws IOException {
-        String message = makeMessage(targetToken, title, body);
+    public void sendMessageTo(String targetToken, String title, String body, String time) throws IOException {
+        String message = makeMessage(targetToken, title, body, time);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
@@ -35,7 +35,7 @@ public class FirebaseCloudMessageService {
 
     }
 
-    private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
+    private String makeMessage(String targetToken, String title, String body, String time) throws JsonProcessingException {
         FcmMessage fcmMessage =
                 FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
@@ -43,7 +43,7 @@ public class FirebaseCloudMessageService {
                         .data(FcmMessage.Data.builder()
                                 .title(title)
                                 .body(body)
-                                .image(null)
+                                .date(time)
                                 .build()
                         )
                         .build()
