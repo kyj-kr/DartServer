@@ -43,7 +43,7 @@ public class MyServerApplication {
 		System.out.println("startTime: " + startTime);
 
 //		try {
-//			new FirebaseCloudMessageService().sendMessageTo("fnK7UyKdSDCsahvwl0fEsV:APA91bEDPBZM46lK5V1ehrz1EpzYP2wzEhSRulfuuoJuoG6IhqMpv_GnMSSWcYLRoYKdT_cgSfUI7it-FLKUx0oZq9C1mGDOl-ugmhiypE8NFqeukT6-0IMEm91KC9lQ89MsuRFmA4SM", "Server", "관리자야 서버 다시 시작했다", startTime);
+//			new FirebaseCloudMessageService().sendMessageTo("dcYDXOfaSMu0_LvQI7fCeG:APA91bEv92Usjqi_FrFKCaSOYBM6-tAGlHrffO3ivKaSaLquIKWQKknkw2uIJMlifi9ri365WA6yIJbYTTIy6C0kKgxxDiBd2XQbDeFk-yfmiDyGqlMSY7IU5-ByOedQZB4ianuePD5m", "Server", "관리자야 서버 다시 시작했다", startTime);
 //		} catch(Exception e) {
 //
 //		}
