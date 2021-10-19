@@ -42,11 +42,11 @@ public class MyServerApplication {
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		System.out.println("startTime: " + startTime);
 
-//		try {
-//			new FirebaseCloudMessageService().sendMessageTo("dcYDXOfaSMu0_LvQI7fCeG:APA91bEv92Usjqi_FrFKCaSOYBM6-tAGlHrffO3ivKaSaLquIKWQKknkw2uIJMlifi9ri365WA6yIJbYTTIy6C0kKgxxDiBd2XQbDeFk-yfmiDyGqlMSY7IU5-ByOedQZB4ianuePD5m", "Server", "관리자야 서버 다시 시작했다", startTime);
-//		} catch(Exception e) {
-//
-//		}
+		try {
+			new FirebaseCloudMessageService().sendMessageTo("dcYDXOfaSMu0_LvQI7fCeG:APA91bEv92Usjqi_FrFKCaSOYBM6-tAGlHrffO3ivKaSaLquIKWQKknkw2uIJMlifi9ri365WA6yIJbYTTIy6C0kKgxxDiBd2XQbDeFk-yfmiDyGqlMSY7IU5-ByOedQZB4ianuePD5m", "Server", "관리자야 서버 다시 시작했다", startTime);
+		} catch(Exception e) {
+
+		}
 
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
@@ -66,40 +66,33 @@ public class MyServerApplication {
 					}
 				}
 
+				String corpMsg = "";
 				for(NotiVo notiVo : userVo.getNotiVos()) {
 					if(!notiVo.isMessaged()) {
 						notiVo.setMessaged(true);
-						try {
-							new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), "공시 알림", notiVo.getCorpName() + "에서 공시가 올라왔어요!", notiVo.getTime());
-						} catch(Exception e) {
-							System.out.println(e);
+						if(!corpMsg.contains(notiVo.getCorpName())) {
+							if(corpMsg.equals("")) {
+								corpMsg = corpMsg + notiVo.getCorpName() + "/" + notiVo.getTime();
+							}
+							else {
+								corpMsg = corpMsg + "," + notiVo.getCorpName() + "/" + notiVo.getTime();
+							}
 						}
 					}
 				}
 
-//				String corpMsg = "";
-//				for(NotiVo notiVo : userVo.getNotiVos()) {
-//					if(!notiVo.isMessaged()) {
-//						notiVo.setMessaged(true);
-//						if(!corpMsg.contains(notiVo.getCorpName())) {
-//							if(corpMsg.equals("")) {
-//								corpMsg = notiVo.getCorpName();
-//							}
-//							else {
-//								corpMsg = corpMsg + ", " + notiVo.getCorpName();
-//							}
-//						}
-//					}
-//				}
-
-//				if(!corpMsg.equals("")) {
-//					try {
-//						String[] corpNames = corpMsg.split(", ");
-//						new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), "공시 알림", corpMsg + "에서 공시가 올라왔어요!");
-//					} catch (Exception e) {
-//						System.out.println(e);
-//					}
-//				}
+				if(!corpMsg.equals("")) {
+					try {
+						String[] corpNameDates = corpMsg.split(",");
+						for(String corpNameDate : corpNameDates) {
+							String corpName = corpNameDate.split("/")[0];
+							String corpDate = corpNameDate.split("/")[1];
+							new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), "공시 알림", corpName + "에서 공시가 올라왔어요!", corpDate);
+						}
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+				}
 			}
 
 			System.out.println("loop");
