@@ -96,10 +96,12 @@ public class MyServerApplication {
 							String rate = corpInfo.split("/")[2];
 							String title = corpInfo.split("/")[3];
 							if(rate.equals("")) {
-								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, "공시가 올라왔어요!", corpDate);
+								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, title + " 공시가 올라왔어요!", corpDate);
 							}
 							else {
-								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, "어닝 서프라이즈 공시가 올라왔어요!\n전년동기대비증감률 : " + rate, corpDate);
+								if(Float.valueOf(rate) >= 30.0) {
+									new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, "어닝 서프라이즈 공시가 올라왔어요!\n전년동기대비증감률 : " + rate, corpDate);
+								}
 							}
 						}
 					} catch (Exception e) {
