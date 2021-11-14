@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @SpringBootApplication
 public class MyServerApplication {
@@ -32,6 +33,8 @@ public class MyServerApplication {
 	private static ArrayList<RecentCorpVo> recentCorps = new ArrayList<>();
 	private static String startTime = "";
 
+	public static HashMap<String, String> bussinessResultVisitedHistory = new HashMap<>();
+
 	public static void main(String[] args) {
 		SpringApplication.run(MyServerApplication.class, args);
 
@@ -42,14 +45,14 @@ public class MyServerApplication {
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		System.out.println("startTime: " + startTime);
 
-//		try {
-//			new FirebaseCloudMessageService().sendMessageTo("crZBkDCMSj27bQXGoD9Ych:APA91bHN53eVYJyMSE5HylWMnzQo1CKo-4eDP6Cd7BynhQgYOPIGi1A7-S-ndseMDTW2n_TsND7HSPG8TI3AYKpkf3Huh0Q7hnqTddWZMqpn0riNmNg8qG6tMgMnu1gI4YUzia4B37MA", "공시 알림", "한화시스템에서 공시가 올라왔어요!", startTime);
-//		} catch(Exception e) {
-//
-//		}
+		try {
+			new FirebaseCloudMessageService().sendMessageTo("cS21_kmFS9qeNs4AElHcQT:APA91bGzzExSV0QJA-j7vOGFD2Nc1FKzJQQmqq-wJl_ikitHW1Flsuv43iBdAFJTqODjmo4zxgGKb2c_XntYo_lyFVg2kf-l0LnhYOeWEnzylWFMZXnPc03SGVkSpyuuRDaSwJJQJJ7O", "한화", "사업보고서 공시가 올라왔어요!", startTime);
+		} catch(Exception e) {
 
-		String rate = new XmlRequestService().getRate("20211112900952");
-		System.out.println("rate: " + rate);
+		}
+
+//		String rate = new DisclosureRequestService().getRate("20211112801211");
+//		System.out.println("rate: " + rate);
 
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
@@ -64,12 +67,21 @@ public class MyServerApplication {
 			// 그래서 notiVos에서 특정 notiVo를 remove 하는 코드는 추가하지 않음
 			for(UserVo userVo : userDatas) {
 				for(RecentCorpVo recentCorpVo : recentCorps) {
-					if(isNewNoti(userVo, recentCorpVo.getCorpName(), recentCorpVo.getReceptNum())) { // 관심기업이면서 처음 보는 보고서라면
-						userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), false));
-					}
+					if(isNewNoti(userVo, recentCorpVo.getReceptNum())) { // 처음 보는 보고서라면
 
-					if(isBusinessResultDisclosure(recentCorpVo.getTitle())) {
-						new XmlRequestService().getRate(recentCorpVo.getReceptNum());
+						if(isAlarmCorp(userVo.getCorpNames(), recentCorpVo.getCorpName())) { // 관심기업이라면
+							userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), "", recentCorpVo.getTitle(), false));
+						}
+
+						if(isBusinessResultDisclosure(recentCorpVo.getTitle())) { // 실적보고서라면
+							String receptNum = recentCorpVo.getReceptNum();
+							if(!isVisited(receptNum)) {
+								String strRate = new DisclosureRequestService().getRate(receptNum);
+								bussinessResultVisitedHistory.put(receptNum, strRate);
+							}
+							String strRate = bussinessResultVisitedHistory.get(receptNum);
+							userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), strRate, recentCorpVo.getTitle(), false));
+						}
 					}
 				}
 
@@ -77,11 +89,18 @@ public class MyServerApplication {
 
 				if(!corpList.equals("")) {
 					try {
-						String[] corpNameDates = corpList.split(",");
-						for(String corpNameDate : corpNameDates) {
-							String corpName = corpNameDate.split("/")[0];
-							String corpDate = corpNameDate.split("/")[1];
-							new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), "공시 알림", corpName + "에서 공시가 올라왔어요!", corpDate);
+						String[] corpInfos = corpList.split(",");
+						for(String corpInfo : corpInfos) {
+							String corpName = corpInfo.split("/")[0];
+							String corpDate = corpInfo.split("/")[1];
+							String rate = corpInfo.split("/")[2];
+							String title = corpInfo.split("/")[3];
+							if(rate.equals("")) {
+								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, "공시가 올라왔어요!", corpDate);
+							}
+							else {
+								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, "어닝 서프라이즈 공시가 올라왔어요!\n전년동기대비증감률 : " + rate, corpDate);
+							}
 						}
 					} catch (Exception e) {
 						System.out.println(e);
@@ -95,14 +114,30 @@ public class MyServerApplication {
 
 	}
 
-	// 관심기업에 포함되어있는지 기업이고, 해당 보고서가 추가 안되어있으면 true 리턴
-	private static boolean isNewNoti(UserVo userVo, String corpName, String receptNum) {
-		return userVo.getCorpNames().contains(corpName) && !userVo.isContains(receptNum);
+	// 처음 보는 보고서라면 true 리턴
+	private static boolean isNewNoti(UserVo userVo, String receptNum) {
+		return !userVo.isContains(receptNum);
+	}
+
+	// 관심 기업이라면
+	private static boolean isAlarmCorp(String userCorpName, String webCorpName) {
+		return userCorpName.contains(webCorpName);
 	}
 
 	// 보고서 이름에 실적이 포함되면 true 리턴
 	private static boolean isBusinessResultDisclosure(String title) {
-		return title.contains("실적");
+		return title.contains("실적") && title.contains("잠정");
+	}
+
+	private static boolean isVisited(String receptNum) {
+		boolean result = false;
+		for(String key : bussinessResultVisitedHistory.keySet()) {
+			if(key.equals(receptNum)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
 	}
 
 	private static void getUserDatas() {

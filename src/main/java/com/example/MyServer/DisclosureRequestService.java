@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class XmlRequestService {
+public class DisclosureRequestService {
 
     public static final String URL_DISCLOUSRE_FILE = "https://opendart.fss.or.kr/api/document.xml";
 
@@ -78,6 +78,12 @@ public class XmlRequestService {
                             .nextElementSibling();
 
                     rate = rateElement.text();
+                    rate = rate.split("%")[0];
+                    String[] rateInfo = rate.split("\\(");
+                    if(rateInfo.length > 1) {
+                        rate = rateInfo[1].trim();
+                    }
+                    break;
                 }
             }
         } catch(Exception e) {
