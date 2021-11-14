@@ -42,11 +42,14 @@ public class MyServerApplication {
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		System.out.println("startTime: " + startTime);
 
-		try {
-			new FirebaseCloudMessageService().sendMessageTo("dcYDXOfaSMu0_LvQI7fCeG:APA91bEv92Usjqi_FrFKCaSOYBM6-tAGlHrffO3ivKaSaLquIKWQKknkw2uIJMlifi9ri365WA6yIJbYTTIy6C0kKgxxDiBd2XQbDeFk-yfmiDyGqlMSY7IU5-ByOedQZB4ianuePD5m", "Server", "관리자야 서버 다시 시작했다", startTime);
-		} catch(Exception e) {
+//		try {
+//			new FirebaseCloudMessageService().sendMessageTo("crZBkDCMSj27bQXGoD9Ych:APA91bHN53eVYJyMSE5HylWMnzQo1CKo-4eDP6Cd7BynhQgYOPIGi1A7-S-ndseMDTW2n_TsND7HSPG8TI3AYKpkf3Huh0Q7hnqTddWZMqpn0riNmNg8qG6tMgMnu1gI4YUzia4B37MA", "공시 알림", "한화시스템에서 공시가 올라왔어요!", startTime);
+//		} catch(Exception e) {
+//
+//		}
 
-		}
+		String rate = new XmlRequestService().getRate("20211112900952");
+		System.out.println("rate: " + rate);
 
 		while(true) {
 			// DB에서 유저들 정보 싹 긁어오기
@@ -59,31 +62,22 @@ public class MyServerApplication {
 			// notiVos에 notiVo를 넣을건데, 이는 알림 중복을 방지하기 위함
 			// 자세히 말하자면, notiVo에 회사명이랑 보고서 제출번호가 필수적으로 들어가서 서버가 돌아가는 동안 계속 저장되어 있어서 똑같은 보고서에 절대 중복하여 알림을 보내지 않음
 			// 그래서 notiVos에서 특정 notiVo를 remove 하는 코드는 추가하지 않음
-			for (UserVo userVo : userDatas) {
-				for (RecentCorpVo recentCorpVo : recentCorps) {
-					if (userVo.getCorpNames().contains(recentCorpVo.getCorpName()) && !userVo.isContains(recentCorpVo.getReceptNum())) {
+			for(UserVo userVo : userDatas) {
+				for(RecentCorpVo recentCorpVo : recentCorps) {
+					if(isNewNoti(userVo, recentCorpVo.getCorpName(), recentCorpVo.getReceptNum())) { // 관심기업이면서 처음 보는 보고서라면
 						userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), false));
 					}
-				}
 
-				String corpMsg = "";
-				for(NotiVo notiVo : userVo.getNotiVos()) {
-					if(!notiVo.isMessaged()) {
-						notiVo.setMessaged(true);
-						if(!corpMsg.contains(notiVo.getCorpName())) {
-							if(corpMsg.equals("")) {
-								corpMsg = corpMsg + notiVo.getCorpName() + "/" + notiVo.getTime();
-							}
-							else {
-								corpMsg = corpMsg + "," + notiVo.getCorpName() + "/" + notiVo.getTime();
-							}
-						}
+					if(isBusinessResultDisclosure(recentCorpVo.getTitle())) {
+						new XmlRequestService().getRate(recentCorpVo.getReceptNum());
 					}
 				}
 
-				if(!corpMsg.equals("")) {
+				String corpList = NotiVo.getCorpList(userVo.getNotiVos());
+
+				if(!corpList.equals("")) {
 					try {
-						String[] corpNameDates = corpMsg.split(",");
+						String[] corpNameDates = corpList.split(",");
 						for(String corpNameDate : corpNameDates) {
 							String corpName = corpNameDate.split("/")[0];
 							String corpDate = corpNameDate.split("/")[1];
@@ -99,6 +93,16 @@ public class MyServerApplication {
 		}
 
 
+	}
+
+	// 관심기업에 포함되어있는지 기업이고, 해당 보고서가 추가 안되어있으면 true 리턴
+	private static boolean isNewNoti(UserVo userVo, String corpName, String receptNum) {
+		return userVo.getCorpNames().contains(corpName) && !userVo.isContains(receptNum);
+	}
+
+	// 보고서 이름에 실적이 포함되면 true 리턴
+	private static boolean isBusinessResultDisclosure(String title) {
+		return title.contains("실적");
 	}
 
 	private static void getUserDatas() {
@@ -210,6 +214,7 @@ public class MyServerApplication {
 
 	private static void parseRecentCorp(String html) {
 		RecentCorpVo recentCorpVo = null;
+		String title = null;
 		String time = null;
 		String corpName = null;
 		String receptNum = null;
@@ -238,6 +243,8 @@ public class MyServerApplication {
 				case 2:
 					receptNum = element.select("a").attr("id").split("_")[1];
 					recentCorpVo.setReceptNum(receptNum);
+					title = element.select("a").text();
+					recentCorpVo.setTitle(title);
 					break;
 
 				case 4:
