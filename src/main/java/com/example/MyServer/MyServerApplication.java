@@ -46,7 +46,7 @@ public class MyServerApplication {
 		System.out.println("startTime: " + startTime);
 
 		try {
-			new FirebaseCloudMessageService().sendMessageTo("cS21_kmFS9qeNs4AElHcQT:APA91bGzzExSV0QJA-j7vOGFD2Nc1FKzJQQmqq-wJl_ikitHW1Flsuv43iBdAFJTqODjmo4zxgGKb2c_XntYo_lyFVg2kf-l0LnhYOeWEnzylWFMZXnPc03SGVkSpyuuRDaSwJJQJJ7O", "한화투자증권", "한화투자증권에서 사업보고서 공시가 올라왔어요!", startTime);
+			new FirebaseCloudMessageService().sendMessageTo("cS21_kmFS9qeNs4AElHcQT:APA91bGzzExSV0QJA-j7vOGFD2Nc1FKzJQQmqq-wJl_ikitHW1Flsuv43iBdAFJTqODjmo4zxgGKb2c_XntYo_lyFVg2kf-l0LnhYOeWEnzylWFMZXnPc03SGVkSpyuuRDaSwJJQJJ7O", "한화투자증권", "한화투자증권에서 어닝 서프라이즈 공시가 나왔어요!\n전년동기대비증감률 : 100%", startTime);
 		} catch(Exception e) {
 
 		}
@@ -99,9 +99,7 @@ public class MyServerApplication {
 								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 " + title + " 공시가 올라왔어요!", corpDate);
 							}
 							else {
-								if(Float.valueOf(rate) >= 30.0) {
-									new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 어닝 서프라이즈 공시가 올라왔어요!\n전년동기대비증감률 : " + rate + "%", corpDate);
-								}
+								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 어닝 서프라이즈 공시가 올라왔어요!\n매출액 전년동기대비증감률 : " + rate + "%\n매출액 전기대비증감률 : ", corpDate);
 							}
 						}
 					} catch (Exception e) {
