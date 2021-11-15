@@ -96,7 +96,7 @@ public class MyServerApplication {
 							String rate = corpInfo.split("/")[2];
 							String title = corpInfo.split("/")[3];
 							if(rate.equals("")) {
-								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, title + " 공시가 올라왔어요!", corpDate);
+								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 " + title + " 공시가 올라왔어요!", corpDate);
 							}
 							else {
 								if(Float.valueOf(rate) >= 30.0) {
