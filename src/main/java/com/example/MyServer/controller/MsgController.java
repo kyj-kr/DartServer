@@ -17,7 +17,7 @@ public class MsgController {
         String deviceToken = body.getDeviceToken();
         System.out.println(deviceToken);
         try {
-            new FirebaseCloudMessageService().sendMessageTo(deviceToken, "Dart Title", "For Test", "1970.01.01");
+            new FirebaseCloudMessageService().sendMessageTo(deviceToken, "Dart Title", "For Test", "1970.01.01", "");
         } catch(Exception e) {
             System.out.println(e);
         }

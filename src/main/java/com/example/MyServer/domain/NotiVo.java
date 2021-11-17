@@ -19,17 +19,17 @@ public class NotiVo {
     private boolean isMessaged;
 
 
-    public static String getCorpList(ArrayList<NotiVo> list) {
+    public static String getCorpInfoList(ArrayList<NotiVo> list) {
         String corpList = "";
         for(NotiVo notiVo : list) {
             if(!notiVo.isMessaged()) {
                 notiVo.setMessaged(true);
                 if(!corpList.contains(notiVo.getCorpName())) {
                     if(corpList.equals("")) {
-                        corpList = notiVo.getCorpName() + "/" + notiVo.getTime() + "/" + notiVo.getRates() + "/" + notiVo.getTitle();
+                        corpList = notiVo.getCorpName() + "/" + notiVo.getTime() + "/" + notiVo.getRates() + "/" + notiVo.getTitle() + "/" + notiVo.getNotifedReceptNum();
                     }
                     else {
-                        corpList = corpList + "," + notiVo.getCorpName() + "/" + notiVo.getTime() + "/" + notiVo.getRates() + "/" + notiVo.getTitle();
+                        corpList = corpList + "," + notiVo.getCorpName() + "/" + notiVo.getTime() + "/" + notiVo.getRates() + "/" + notiVo.getTitle() + "/" + notiVo.getNotifedReceptNum();
                     }
                 }
             }

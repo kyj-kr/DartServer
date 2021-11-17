@@ -46,7 +46,7 @@ public class MyServerApplication {
 		System.out.println("startTime: " + startTime);
 
 		try {
-			new FirebaseCloudMessageService().sendMessageTo("cS21_kmFS9qeNs4AElHcQT:APA91bGzzExSV0QJA-j7vOGFD2Nc1FKzJQQmqq-wJl_ikitHW1Flsuv43iBdAFJTqODjmo4zxgGKb2c_XntYo_lyFVg2kf-l0LnhYOeWEnzylWFMZXnPc03SGVkSpyuuRDaSwJJQJJ7O", "한화투자증권", "한화투자증권에서 어닝 서프라이즈 공시가 나왔어요!\n전년동기대비증감률 : 100%", startTime);
+			new FirebaseCloudMessageService().sendMessageTo("cS21_kmFS9qeNs4AElHcQT:APA91bGzzExSV0QJA-j7vOGFD2Nc1FKzJQQmqq-wJl_ikitHW1Flsuv43iBdAFJTqODjmo4zxgGKb2c_XntYo_lyFVg2kf-l0LnhYOeWEnzylWFMZXnPc03SGVkSpyuuRDaSwJJQJJ7O", "한화투자증권", "한화투자증권에서 어닝 서프라이즈 공시가 나왔어요!\n매출액 전년동기대비증감률 : 100%\n매출액 전기대비증감률 : 110%\n영업이익 전년동기대비증감률 : 100%\n영업이익 전기대비증감률 : 82%\n순이익 전년동기대비증감률 : 29%\n순이익 전기대비증감률 : 49%", startTime, "20211028800526");
 		} catch(Exception e) {
 
 		}
@@ -94,23 +94,24 @@ public class MyServerApplication {
 					}
 				}
 
-				String corpList = NotiVo.getCorpList(userVo.getNotiVos());
+				String corpInfoList = NotiVo.getCorpInfoList(userVo.getNotiVos());
 
-				if(!corpList.equals("")) {
+				if(!corpInfoList.equals("")) {
 					try {
-						String[] corpInfos = corpList.split(",");
+						String[] corpInfos = corpInfoList.split(",");
 						for(String corpInfo : corpInfos) {
 							String corpName = corpInfo.split("/")[0];
 							String corpDate = corpInfo.split("/")[1];
 							String rates = corpInfo.split("/")[2];
 							String title = corpInfo.split("/")[3];
+							String receptNum = corpInfo.split("/")[4];
 							String[] arrRates = rates.split("&");
 							if(rates.equals("")) {
-								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 " + title + " 공시가 올라왔어요!", corpDate);
+								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 " + title + " 공시가 올라왔어요!", corpDate, receptNum);
 							}
 							else {
 								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 어닝 서프라이즈 공시가 올라왔어요!\n매출액 전년동기대비증감률 : " + arrRates[0] + "%\n매출액 전기대비증감률 : " + arrRates[1]
-										+ "%\n영업이익 전년동기대비증감률 : " + arrRates[2] + "%\n영업이익 전기대비증감률 : " + arrRates[3] + "%\n순이익 전년동기대비증감률 : " + arrRates[4] + "%\n순이익 전기대비증감률 : " + arrRates[5] + "%", corpDate);
+										+ "%\n영업이익 전년동기대비증감률 : " + arrRates[2] + "%\n영업이익 전기대비증감률 : " + arrRates[3] + "%\n순이익 전년동기대비증감률 : " + arrRates[4] + "%\n순이익 전기대비증감률 : " + arrRates[5] + "%", corpDate, receptNum);
 							}
 						}
 					} catch (Exception e) {
