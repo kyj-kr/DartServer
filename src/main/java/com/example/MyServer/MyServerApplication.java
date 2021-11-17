@@ -33,7 +33,7 @@ public class MyServerApplication {
 	private static ArrayList<RecentCorpVo> recentCorps = new ArrayList<>();
 	private static String startTime = "";
 
-	public static HashMap<String, String> bussinessResultVisitedHistory = new HashMap<>();
+	public static HashMap<String, String[]> bussinessResultVisitedHistory = new HashMap<>();
 
 	public static void main(String[] args) {
 		SpringApplication.run(MyServerApplication.class, args);
@@ -76,11 +76,20 @@ public class MyServerApplication {
 						if(isBusinessResultDisclosure(recentCorpVo.getTitle())) { // 실적보고서라면
 							String receptNum = recentCorpVo.getReceptNum();
 							if(!isVisited(receptNum)) {
-								String strRate = new DisclosureRequestService().getRate(receptNum);
+								String strRate[] = new DisclosureRequestService().getRate(receptNum);
 								bussinessResultVisitedHistory.put(receptNum, strRate);
 							}
-							String strRate = bussinessResultVisitedHistory.get(receptNum);
-							userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), strRate, recentCorpVo.getTitle(), false));
+							String rates[] = bussinessResultVisitedHistory.get(receptNum);
+							String strRates = "";
+							for(String rate : rates) {
+								if(strRates.isEmpty()) {
+									strRates = strRates + rate;
+								}
+								else {
+									strRates = strRates + "&" + rate;
+								}
+							}
+							userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), strRates, recentCorpVo.getTitle(), false));
 						}
 					}
 				}
@@ -93,13 +102,15 @@ public class MyServerApplication {
 						for(String corpInfo : corpInfos) {
 							String corpName = corpInfo.split("/")[0];
 							String corpDate = corpInfo.split("/")[1];
-							String rate = corpInfo.split("/")[2];
+							String rates = corpInfo.split("/")[2];
 							String title = corpInfo.split("/")[3];
-							if(rate.equals("")) {
+							String[] arrRates = rates.split("&");
+							if(rates.equals("")) {
 								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 " + title + " 공시가 올라왔어요!", corpDate);
 							}
 							else {
-								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 어닝 서프라이즈 공시가 올라왔어요!\n매출액 전년동기대비증감률 : " + rate + "%\n매출액 전기대비증감률 : ", corpDate);
+								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 어닝 서프라이즈 공시가 올라왔어요!\n매출액 전년동기대비증감률 : " + arrRates[0] + "%\n매출액 전기대비증감률 : " + arrRates[1]
+										+ "%\n영업이익 전년동기대비증감률 : " + arrRates[2] + "%\n영업이익 전기대비증감률 : " + arrRates[3] + "%\n순이익 전년동기대비증감률 : " + arrRates[4] + "%\n순이익 전기대비증감률 : " + arrRates[5] + "%", corpDate);
 							}
 						}
 					} catch (Exception e) {

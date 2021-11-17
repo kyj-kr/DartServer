@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -21,11 +22,11 @@ public class DisclosureRequestService {
     public static final String API_KEY = "b1117710ff85f5aec0183f030d7a71f5132b4370";
     public static final String KEY_RECEPT_NUM = "rcept_no";
 
-    public String getRate(String receptNum) {
+    public String[] getRate(String receptNum) {
         String requestUrl = URL_DISCLOUSRE_FILE + "?" + KEY_API_KEY + "=" + API_KEY + "&" + KEY_RECEPT_NUM + "=" + receptNum;
         String html = getHtml(requestUrl);
-        String rate = getRate1(html);
-        return rate;
+        String[] rates = getRates(html);
+        return rates;
     }
 
     private String getHtml(String requestUrl) {
@@ -61,33 +62,44 @@ public class DisclosureRequestService {
         return html;
     }
 
-    private String getRate1(String html) {
+    private String[] getRates(String html) {
         Document document = Jsoup.parse(html);
         Elements elements = document.select("td");
-        String rate = null;
+        ArrayList<String> rateArrayList = new ArrayList<>();
 
         try {
             for (Element element : elements) {
                 String tdName = element.text();
-                if (tdName.equals("매출액")) {
-                    Element rateElement = element.nextElementSibling()
-                            .nextElementSibling()
+                if (tdName.equals("매출액") || tdName.equals("영업이익") || tdName.equals("당기순이익")) {
+                    Element longElement = element
                             .nextElementSibling()
                             .nextElementSibling()
                             .nextElementSibling()
                             .nextElementSibling();
 
-                    rate = rateElement.text();
-                    rate = rate.split("%")[0];
-                    String[] rateInfo = rate.split("\\(");
-                    if(rateInfo.length > 1) {
-                        rate = rateInfo[1].trim();
-                    }
-                    break;
+                    Element shortElement = longElement
+                            .nextElementSibling()
+                            .nextElementSibling();
+
+                    String longRate = getDetailRate(longElement);
+                    String shortRate = getDetailRate(shortElement);
+
+                    rateArrayList.add(longRate);
+                    rateArrayList.add(shortRate);
                 }
             }
         } catch(Exception e) {
             e.printStackTrace();
+        }
+        return (String[]) rateArrayList.toArray();
+    }
+
+    private String getDetailRate(Element element) {
+        String rate = element.text();
+        rate = rate.split("%")[0];
+        String[] rateInfo = rate.split("\\(");
+        if(rateInfo.length > 1) {
+            rate = rateInfo[1].trim();
         }
         return rate;
     }
