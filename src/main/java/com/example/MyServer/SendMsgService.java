@@ -13,7 +13,7 @@ public class SendMsgService {
             RequestBody requestBody = RequestBody.create("", MediaType.get("application/json; charset=utf-8"));
             Request request = new Request.Builder()
                     .url(URL_DART_HEROKU)
-                    .post(requestBody)
+                    .get()
                     .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                     .build();
 
