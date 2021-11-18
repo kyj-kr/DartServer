@@ -62,7 +62,7 @@ public class MyServerApplication {
 
 		while(true) {
 
-			if(isMsgTime(1) && isUpdateTime()) {
+			if(isMsgTime(20) && isUpdateTime()) {
 				sendMsgService.sendMySelf();
 				System.out.println("send msg ok");
 			}
