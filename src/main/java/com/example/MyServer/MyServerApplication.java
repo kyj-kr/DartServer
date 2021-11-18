@@ -17,6 +17,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 @SpringBootApplication
@@ -35,12 +37,16 @@ public class MyServerApplication {
 
 	public static HashMap<String, String[]> bussinessResultVisitedHistory = new HashMap<>();
 
+	public static LocalTime msgTime = LocalTime.now();
+	public static String prevTime;
+	private static SendMsgService sendMsgService = new SendMsgService();
+
 	public static void main(String[] args) {
 		SpringApplication.run(MyServerApplication.class, args);
 
-
 		LocalDate localDate = LocalDate.now();
 		LocalTime localTime = LocalTime.now();
+		prevTime = msgTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		localTime = localTime.minusMinutes(2);
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		System.out.println("startTime: " + startTime);
@@ -55,6 +61,12 @@ public class MyServerApplication {
 //		System.out.println("rate: " + rate);
 
 		while(true) {
+
+			if(isMsgTime(1) && isUpdateTime()) {
+				sendMsgService.sendMySelf();
+				System.out.println("send msg ok");
+			}
+
 			// DB에서 유저들 정보 싹 긁어오기
 			getUserDatas();
 
@@ -124,6 +136,36 @@ public class MyServerApplication {
 		}
 
 
+	}
+
+	// 마지막 갱신시간으로부터 minute 시간이 지났으면 true 리턴
+	private static boolean isMsgTime(int minute) {
+		msgTime = LocalTime.now();
+		String nowTime = msgTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+		msgTime = msgTime.minusMinutes(minute);
+		String minusTime = msgTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+
+		if(compareString(minusTime, prevTime) == 1) {
+			updatePrevTime(nowTime);
+			return true;
+		}
+		return false;
+	}
+
+	private static void updatePrevTime(String time) {
+		prevTime = time;
+	}
+
+	// 07~20시 사이면 true
+	private static boolean isUpdateTime() {
+		msgTime = LocalTime.now();
+		System.out.println(msgTime);
+
+		String nowTime = msgTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+		if( (compareString(nowTime, "07:00") == 1) && (compareString("20:00", nowTime) == 1) ) {
+			return true;
+		}
+		return false;
 	}
 
 	// 처음 보는 보고서라면 true 리턴
