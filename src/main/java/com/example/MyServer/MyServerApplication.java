@@ -60,6 +60,8 @@ public class MyServerApplication {
 //		String rate = new DisclosureRequestService().getRate("20211112801211");
 //		System.out.println("rate: " + rate);
 
+		getUserDatas();
+
 		while(true) {
 
 			if(isMsgTime(0) && isUpdateTime()) {
@@ -68,7 +70,7 @@ public class MyServerApplication {
 			}
 
 			// DB에서 유저들 정보 싹 긁어오기
-			getUserDatas();
+//			getUserDatas();
 
 			// 최근 공시 회사 홈페이지에서 긁어오기
 			getRecentCorps();
