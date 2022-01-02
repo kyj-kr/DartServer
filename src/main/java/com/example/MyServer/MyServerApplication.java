@@ -52,7 +52,7 @@ public class MyServerApplication {
 		System.out.println("startTime: " + startTime);
 
 		try {
-			new FirebaseCloudMessageService().sendMessageTo("cS21_kmFS9qeNs4AElHcQT:APA91bGzzExSV0QJA-j7vOGFD2Nc1FKzJQQmqq-wJl_ikitHW1Flsuv43iBdAFJTqODjmo4zxgGKb2c_XntYo_lyFVg2kf-l0LnhYOeWEnzylWFMZXnPc03SGVkSpyuuRDaSwJJQJJ7O", "한화투자증권", "한화투자증권에서 어닝 서프라이즈 공시가 나왔어요!\n매출액 전년동기대비증감률 : 흑자%\n매출액 전기대비증감률 : 1,234%\n영업이익 전년동기대비증감률 : 15%\n영업이익 전기대비증감률 : 16%\n순이익 전년동기대비증감률 : 29%\n순이익 전기대비증감률 : -%", startTime, "20211028800526");
+			new FirebaseCloudMessageService().sendMessageTo("fWe-Yb4-QD-D7Uy8xvvYUC:APA91bHJKCuWyb5e8o7iSrq-fgOqhXfP5KKZz_UiqwRIPKiZKJJKvYnquPX5YkaNxlg4gn_7pi7ZMtYcnTN99E8cw54ExYe_lxMEj6VMWeA0_jwfkbUuiJ7Gd4NeZuhRIW53knR037NM", "카카오게임즈", "카카오게임즈에서 공시가 올라왔어요!", "2022.01.02. 00:00", "20211028800526");
 		} catch(Exception e) {
 
 		}
