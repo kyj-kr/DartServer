@@ -132,6 +132,11 @@ public class MyServerApplication {
 						System.out.println(e);
 					}
 				}
+
+				// test
+				if(userVo.getAndroidId().equals("2d6ab579f7e70086")) {
+					System.out.println(userVo.getCorpNames());
+				}
 			}
 
 			System.out.println("loop");
