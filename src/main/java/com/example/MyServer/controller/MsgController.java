@@ -2,11 +2,10 @@ package com.example.MyServer.controller;
 
 
 import com.example.MyServer.FirebaseCloudMessageService;
+import com.example.MyServer.MyServerApplication;
 import com.example.MyServer.domain.UserVo;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.MyServer.mapper.FirebaseDbService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping
@@ -20,6 +19,23 @@ public class MsgController {
             new FirebaseCloudMessageService().sendMessageTo(deviceToken, "Dart Title", "For Test", "1970.01.01", "");
         } catch(Exception e) {
             System.out.println(e);
+        }
+    }
+
+    @PostMapping(value = "/alarmList")
+    public void putAlarmList(@RequestBody UserVo body) {
+        String androidId = body.getAndroidId();
+        String deviceToken = body.getDeviceToken();
+        String corpInfos = body.getCorpNames();
+        try {
+            // db에 저장
+            new FirebaseDbService().updateAlarmList(androidId, deviceToken, corpInfos);
+            
+            // user 정보 업데이트
+            MyServerApplication.getUserDatas();
+
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }

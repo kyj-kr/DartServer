@@ -196,7 +196,7 @@ public class MyServerApplication {
 		return result;
 	}
 
-	private static void getUserDatas() {
+	public static void getUserDatas() {
 		try {
 			Request request = new Request.Builder()
 					.url(FIREBASE_DB_URL + ".json")
