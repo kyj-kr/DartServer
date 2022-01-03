@@ -52,7 +52,7 @@ public class MyServerApplication {
 		System.out.println("startTime: " + startTime);
 
 		try {
-			new FirebaseCloudMessageService().sendMessageTo("fWe-Yb4-QD-D7Uy8xvvYUC:APA91bHJKCuWyb5e8o7iSrq-fgOqhXfP5KKZz_UiqwRIPKiZKJJKvYnquPX5YkaNxlg4gn_7pi7ZMtYcnTN99E8cw54ExYe_lxMEj6VMWeA0_jwfkbUuiJ7Gd4NeZuhRIW53knR037NM", "카카오게임즈", "카카오게임즈 테스트다 관리자야", startTime, "20211028800526");
+			new FirebaseCloudMessageService().sendMessageTo("ckyzUjFvRkWkgflR-HsVur:APA91bGeATuFx5hGEYCpHNafu7whIE7TYW1cLBIJBrcoXjB817m3BazWIl5BnkOK4fdhScU4ZbCTorhQGL47huZWVZr80IMNav5LQ44RNUnNKCuS14NPDXrbLlyYrXyToiAlAP2y4pHD", "카카오게임즈", "카카오게임즈 테스트다 관리자야", startTime, "20211028800526");
 		} catch(Exception e) {
 
 		}
