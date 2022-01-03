@@ -1,5 +1,6 @@
 package com.example.MyServer.mapper;
 
+import com.example.MyServer.MyServerApplication;
 import okhttp3.*;
 
 public class FirebaseDbService {
@@ -19,5 +20,9 @@ public class FirebaseDbService {
                 .build();
 
         Response response = client.newCall(request).execute();
+        if(response.isSuccessful()) {
+            // user 정보 업데이트
+            MyServerApplication.getUserDatas();
+        }
     }
 }

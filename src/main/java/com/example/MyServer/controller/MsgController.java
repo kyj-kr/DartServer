@@ -30,9 +30,6 @@ public class MsgController {
         try {
             // db에 저장
             new FirebaseDbService().updateAlarmList(androidId, deviceToken, corpInfos);
-            
-            // user 정보 업데이트
-            MyServerApplication.getUserDatas();
 
         } catch(Exception e) {
             e.printStackTrace();
