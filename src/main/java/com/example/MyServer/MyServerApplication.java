@@ -62,84 +62,87 @@ public class MyServerApplication {
 
 		getUserDatas();
 
-		while(true) {
+		try {
 
-			if(isMsgTime(0) && isUpdateTime()) {
-				sendMsgService.sendMySelf();
-				System.out.println("send msg ok");
-			}
+			while (true) {
 
-			// DB에서 유저들 정보 싹 긁어오기
+				if (isMsgTime(0) && isUpdateTime()) {
+					sendMsgService.sendMySelf();
+					System.out.println("send msg ok");
+				}
+
+				// DB에서 유저들 정보 싹 긁어오기
 //			getUserDatas();
 
-			// 최근 공시 회사 홈페이지에서 긁어오기
-			getRecentCorps();
+				// 최근 공시 회사 홈페이지에서 긁어오기
+				getRecentCorps();
 
-			// 최근 공시 올라온 회사랑 유저들 corpnames contains 여부 확인하고 존재하면 cloudmessage 보내기
-			// notiVos에 notiVo를 넣을건데, 이는 알림 중복을 방지하기 위함
-			// 자세히 말하자면, notiVo에 회사명이랑 보고서 제출번호가 필수적으로 들어가서 서버가 돌아가는 동안 계속 저장되어 있어서 똑같은 보고서에 절대 중복하여 알림을 보내지 않음
-			// 그래서 notiVos에서 특정 notiVo를 remove 하는 코드는 추가하지 않음
-			for(UserVo userVo : userDatas) {
-				for(RecentCorpVo recentCorpVo : recentCorps) {
-					if(isNewNoti(userVo, recentCorpVo.getReceptNum())) { // 처음 보는 보고서라면
+				// 최근 공시 올라온 회사랑 유저들 corpnames contains 여부 확인하고 존재하면 cloudmessage 보내기
+				// notiVos에 notiVo를 넣을건데, 이는 알림 중복을 방지하기 위함
+				// 자세히 말하자면, notiVo에 회사명이랑 보고서 제출번호가 필수적으로 들어가서 서버가 돌아가는 동안 계속 저장되어 있어서 똑같은 보고서에 절대 중복하여 알림을 보내지 않음
+				// 그래서 notiVos에서 특정 notiVo를 remove 하는 코드는 추가하지 않음
+				for (UserVo userVo : userDatas) {
+					for (RecentCorpVo recentCorpVo : recentCorps) {
+						if (isNewNoti(userVo, recentCorpVo.getReceptNum())) { // 처음 보는 보고서라면
 
-						if(isAlarmCorp(userVo.getCorpNames(), recentCorpVo.getCorpName())) { // 관심기업이라면
-							userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), "", recentCorpVo.getTitle(), false));
-						}
-
-						if(isBusinessResultDisclosure(recentCorpVo.getTitle())) { // 실적보고서라면
-							String receptNum = recentCorpVo.getReceptNum();
-							if(!isVisited(receptNum)) {
-								String strRate[] = new DisclosureRequestService().getRate(receptNum);
-								bussinessResultVisitedHistory.put(receptNum, strRate);
+							if (isAlarmCorp(userVo.getCorpNames(), recentCorpVo.getCorpName())) { // 관심기업이라면
+								userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), "", recentCorpVo.getTitle(), false));
 							}
-							String rates[] = bussinessResultVisitedHistory.get(receptNum);
-							String strRates = "";
-							for(String rate : rates) {
-								if(strRates.isEmpty()) {
-									strRates = strRates + rate;
+
+							if (isBusinessResultDisclosure(recentCorpVo.getTitle())) { // 실적보고서라면
+								String receptNum = recentCorpVo.getReceptNum();
+								if (!isVisited(receptNum)) {
+									String strRate[] = new DisclosureRequestService().getRate(receptNum);
+									bussinessResultVisitedHistory.put(receptNum, strRate);
 								}
-								else {
-									strRates = strRates + "&" + rate;
+								String rates[] = bussinessResultVisitedHistory.get(receptNum);
+								String strRates = "";
+								for (String rate : rates) {
+									if (strRates.isEmpty()) {
+										strRates = strRates + rate;
+									} else {
+										strRates = strRates + "&" + rate;
+									}
+								}
+								userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), strRates, recentCorpVo.getTitle(), false));
+							}
+						}
+					}
+
+					String corpInfoList = NotiVo.getCorpInfoList(userVo.getNotiVos());
+
+					if (!corpInfoList.equals("")) {
+						try {
+							String[] corpInfos = corpInfoList.split(",");
+							for (String corpInfo : corpInfos) {
+								String corpName = corpInfo.split("/")[0];
+								String corpDate = corpInfo.split("/")[1];
+								String rates = corpInfo.split("/")[2];
+								String title = corpInfo.split("/")[3];
+								String receptNum = corpInfo.split("/")[4];
+								String[] arrRates = rates.split("&");
+								if (rates.equals("")) {
+									new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 " + title + " 공시가 올라왔어요!", corpDate, receptNum);
+								} else {
+									new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 어닝 서프라이즈 공시가 올라왔어요!\n매출액 전년동기대비증감률 : " + arrRates[0] + "%\n매출액 전기대비증감률 : " + arrRates[1]
+											+ "%\n영업이익 전년동기대비증감률 : " + arrRates[2] + "%\n영업이익 전기대비증감률 : " + arrRates[3] + "%\n순이익 전년동기대비증감률 : " + arrRates[4] + "%\n순이익 전기대비증감률 : " + arrRates[5] + "%", corpDate, receptNum);
 								}
 							}
-							userVo.getNotiVos().add(new NotiVo(recentCorpVo.getCorpName(), recentCorpVo.getTime(), recentCorpVo.getReceptNum(), strRates, recentCorpVo.getTitle(), false));
+						} catch (Exception e) {
+							System.out.println(e);
 						}
+					}
+
+					// test
+					if (userVo.getAndroidId().equals("2d6ab579f7e70086")) {
+						System.out.println(userVo.getCorpNames());
 					}
 				}
 
-				String corpInfoList = NotiVo.getCorpInfoList(userVo.getNotiVos());
-
-				if(!corpInfoList.equals("")) {
-					try {
-						String[] corpInfos = corpInfoList.split(",");
-						for(String corpInfo : corpInfos) {
-							String corpName = corpInfo.split("/")[0];
-							String corpDate = corpInfo.split("/")[1];
-							String rates = corpInfo.split("/")[2];
-							String title = corpInfo.split("/")[3];
-							String receptNum = corpInfo.split("/")[4];
-							String[] arrRates = rates.split("&");
-							if(rates.equals("")) {
-								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 " + title + " 공시가 올라왔어요!", corpDate, receptNum);
-							}
-							else {
-								new FirebaseCloudMessageService().sendMessageTo(userVo.getDeviceToken(), corpName, corpName + "에서 어닝 서프라이즈 공시가 올라왔어요!\n매출액 전년동기대비증감률 : " + arrRates[0] + "%\n매출액 전기대비증감률 : " + arrRates[1]
-										+ "%\n영업이익 전년동기대비증감률 : " + arrRates[2] + "%\n영업이익 전기대비증감률 : " + arrRates[3] + "%\n순이익 전년동기대비증감률 : " + arrRates[4] + "%\n순이익 전기대비증감률 : " + arrRates[5] + "%", corpDate, receptNum);
-							}
-						}
-					} catch (Exception e) {
-						System.out.println(e);
-					}
-				}
-
-				// test
-				if(userVo.getAndroidId().equals("2d6ab579f7e70086")) {
-					System.out.println(userVo.getCorpNames());
-				}
+				System.out.println("loop");
 			}
-
-			System.out.println("loop");
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 
 
