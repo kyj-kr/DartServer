@@ -52,7 +52,7 @@ public class MyServerApplication {
 		System.out.println("startTime: " + startTime);
 
 		try {
-			new FirebaseCloudMessageService().sendMessageTo("fWe-Yb4-QD-D7Uy8xvvYUC:APA91bHJKCuWyb5e8o7iSrq-fgOqhXfP5KKZz_UiqwRIPKiZKJJKvYnquPX5YkaNxlg4gn_7pi7ZMtYcnTN99E8cw54ExYe_lxMEj6VMWeA0_jwfkbUuiJ7Gd4NeZuhRIW53knR037NM", "카카오게임즈", "카카오게임즈에서 공시가 올라왔어요!", "2022.01.02. 00:00", "20211028800526");
+			new FirebaseCloudMessageService().sendMessageTo("fWe-Yb4-QD-D7Uy8xvvYUC:APA91bHJKCuWyb5e8o7iSrq-fgOqhXfP5KKZz_UiqwRIPKiZKJJKvYnquPX5YkaNxlg4gn_7pi7ZMtYcnTN99E8cw54ExYe_lxMEj6VMWeA0_jwfkbUuiJ7Gd4NeZuhRIW53knR037NM", "카카오게임즈", "카카오게임즈 테스트다 관리자야", startTime, "20211028800526");
 		} catch(Exception e) {
 
 		}
@@ -273,7 +273,7 @@ public class MyServerApplication {
 			recentCorps.clear();
 			// 전체
 			Request request = new Request.Builder()
-					.url("http://dart.fss.or.kr/dsac001/mainAll.do")
+					.url("https://dart.fss.or.kr/dsac001/mainAll.do")
 					.build();
 
 			Response response = client.newCall(request).execute();
@@ -282,7 +282,7 @@ public class MyServerApplication {
 
 			// 5퍼 임원
 			request = new Request.Builder()
-					.url("http://dart.fss.or.kr/dsac001/mainO.do")
+					.url("https://dart.fss.or.kr/dsac001/mainO.do")
 					.build();
 
 			response = client.newCall(request).execute();
@@ -291,7 +291,7 @@ public class MyServerApplication {
 
 			// 펀드
 			request = new Request.Builder()
-					.url("http://dart.fss.or.kr/dsac001/mainF.do")
+					.url("https://dart.fss.or.kr/dsac001/mainF.do")
 					.build();
 
 			response = client.newCall(request).execute();
