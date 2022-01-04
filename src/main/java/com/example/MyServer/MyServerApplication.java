@@ -48,12 +48,12 @@ public class MyServerApplication {
 		LocalTime localTime = LocalTime.now();
 		prevTime = msgTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		localTime = localTime.minusMinutes(2);
-		localTime = localTime.minusHours(2);
+//		localTime = localTime.minusHours(2);
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		System.out.println("startTime: " + startTime);
 
 		try {
-			new FirebaseCloudMessageService().sendMessageTo("ckyzUjFvRkWkgflR-HsVur:APA91bGeATuFx5hGEYCpHNafu7whIE7TYW1cLBIJBrcoXjB817m3BazWIl5BnkOK4fdhScU4ZbCTorhQGL47huZWVZr80IMNav5LQ44RNUnNKCuS14NPDXrbLlyYrXyToiAlAP2y4pHD", "카카오게임즈", "카카오게임즈 테스트다 관리자야", startTime, "20211028800526");
+			new FirebaseCloudMessageService().sendMessageTo("dcYDXOfaSMu0_LvQI7fCeG:APA91bEv92Usjqi_FrFKCaSOYBM6-tAGlHrffO3ivKaSaLquIKWQKknkw2uIJMlifi9ri365WA6yIJbYTTIy6C0kKgxxDiBd2XQbDeFk-yfmiDyGqlMSY7IU5-ByOedQZB4ianuePD5m", "카카오게임즈", "카카오게임즈 테스트다 관리자야", startTime, "20211028800526");
 		} catch(Exception e) {
 
 		}
