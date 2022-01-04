@@ -48,6 +48,7 @@ public class MyServerApplication {
 		LocalTime localTime = LocalTime.now();
 		prevTime = msgTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		localTime = localTime.minusMinutes(2);
+		localTime = localTime.minusHours(2);
 		startTime = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.")) + localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 		System.out.println("startTime: " + startTime);
 
