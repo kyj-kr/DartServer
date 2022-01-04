@@ -63,20 +63,20 @@ public class MyServerApplication {
 
 		getUserDatas();
 
-		try {
+		while (true) {
 
-			while (true) {
+			if (isMsgTime(0) && isUpdateTime()) {
+				sendMsgService.sendMySelf();
+				System.out.println("send msg ok");
+			}
 
-				if (isMsgTime(0) && isUpdateTime()) {
-					sendMsgService.sendMySelf();
-					System.out.println("send msg ok");
-				}
-
-				// DB에서 유저들 정보 싹 긁어오기
+			// DB에서 유저들 정보 싹 긁어오기
 //			getUserDatas();
 
-				// 최근 공시 회사 홈페이지에서 긁어오기
-				getRecentCorps();
+			// 최근 공시 회사 홈페이지에서 긁어오기
+			getRecentCorps();
+
+			try {
 
 				// 최근 공시 올라온 회사랑 유저들 corpnames contains 여부 확인하고 존재하면 cloudmessage 보내기
 				// notiVos에 notiVo를 넣을건데, 이는 알림 중복을 방지하기 위함
@@ -142,8 +142,10 @@ public class MyServerApplication {
 
 				System.out.println("loop");
 			}
-		} catch(Exception e) {
-			e.printStackTrace();
+
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 
