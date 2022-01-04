@@ -134,13 +134,13 @@ public class MyServerApplication {
 						}
 					}
 
-					// test
-					if (userVo.getAndroidId().equals("2d6ab579f7e70086")) {
-						System.out.println(userVo.getCorpNames());
-					}
+//					// test
+//					if (userVo.getAndroidId().equals("2d6ab579f7e70086")) {
+//						System.out.println(userVo.getCorpNames());
+//					}
 				}
 
-				System.out.println("loop");
+				System.out.println("total user: " + userDatas.size());
 			}
 
 			catch(Exception e) {
