@@ -130,7 +130,7 @@ public class MyServerApplication {
 								}
 							}
 						} catch (Exception e) {
-							System.out.println(e);
+							e.printStackTrace();
 						}
 					}
 

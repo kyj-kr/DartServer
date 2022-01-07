@@ -18,7 +18,7 @@ public class MsgController {
         try {
             new FirebaseCloudMessageService().sendMessageTo(deviceToken, "Dart Title", "For Test", "1970.01.01", "");
         } catch(Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
