@@ -17,14 +17,14 @@ public class SendMsgService {
 
             response = client.newCall(request).execute();
         } catch(Exception e) {
-            e.printStackTrace();
+            System.out.println("SendMsgService 20: " + e.toString());
         } finally {
             if (response != null) {
                 try {
                     response.body().close();
                 }
                 catch (final Throwable th) {
-                    System.out.println(th.getMessage());
+                    System.out.println("SendMsgService 26: " + th.toString());
                 }
             }
         }

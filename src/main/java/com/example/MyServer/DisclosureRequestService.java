@@ -89,7 +89,7 @@ public class DisclosureRequestService {
                 }
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            System.out.println("DisclosureRequestService 92: " + e.toString());
         }
         return (String[]) rateArrayList.toArray();
     }

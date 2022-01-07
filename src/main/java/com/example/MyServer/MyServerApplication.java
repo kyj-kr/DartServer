@@ -130,7 +130,7 @@ public class MyServerApplication {
 								}
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							System.out.println("MyServerApplication 133: " + e.toString());
 						}
 					}
 
@@ -144,7 +144,7 @@ public class MyServerApplication {
 			}
 
 			catch(Exception e) {
-				e.printStackTrace();
+				System.out.println("MyServerApplication 147: " + e.toString());
 			}
 		}
 
@@ -219,7 +219,7 @@ public class MyServerApplication {
 			parseUserData(responseString);
 
 		} catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("MyServerApplication 222: " + e.toString());
 		}
 	}
 
@@ -310,7 +310,7 @@ public class MyServerApplication {
 			parseRecentCorp(responseString);
 
 		} catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("MyServerApplication 313: " + e.toString());
 		}
 	}
 
