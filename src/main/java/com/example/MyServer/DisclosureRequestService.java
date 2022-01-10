@@ -91,7 +91,7 @@ public class DisclosureRequestService {
         } catch(Exception e) {
             System.out.println("DisclosureRequestService 92: " + e.toString());
         }
-        return (String[]) rateArrayList.toArray();
+        return rateArrayList.toArray(new String[rateArrayList.size()]);
     }
 
     private String getDetailRate(Element element) {
