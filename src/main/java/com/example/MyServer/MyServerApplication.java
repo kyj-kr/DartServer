@@ -144,7 +144,8 @@ public class MyServerApplication {
 			}
 
 			catch(Exception e) {
-				System.out.println("MyServerApplication 147: " + e.toString());
+				System.out.println("MyServerApplication 147: ");
+				e.printStackTrace();
 			}
 		}
 
